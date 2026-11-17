@@ -1,0 +1,71 @@
+---
+// "More in <topic>": up to three other articles from the same topic, shown at
+// the end of an article. Renders nothing if the topic has no other articles.
+import FormattedDate from "./FormattedDate.astro";
+import type { Article } from "../lib/articles";
+import type { Topic } from "../lib/topics";
+
+interface Props {
+  topic: Topic;
+  /** Other articles in the topic, newest first (not including this one). */
+  articles: Article[];
+}
+
+const MAX_SHOWN = 3;
+const { topic, articles } = Astro.props;
+const shown = articles.slice(0, MAX_SHOWN);
+---
+
+{
+  shown.length > 0 && (
+    <aside class="more" aria-labelledby="more-heading">
+      <h2 id="more-heading">
+        More in <a href={`/topics/${topic.id}/`}>{topic.data.name}</a>
+      </h2>
+      <ul>
+        {shown.map((article) => (
+          <li>
+            <a href={`/articles/${article.id}/`}>{article.data.title}</a>
+            <span class="date">
+              <FormattedDate date={article.data.pubDate} />
+            </span>
+          </li>
+        ))}
+      </ul>
+    </aside>
+  )
+}
+
+<style>
+  .more {
+    margin-top: var(--space-6);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-rule);
+  }
+  h2 {
+    font-size: var(--text-lg);
+    margin: 0 0 var(--space-3);
+  }
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  li + li {
+    margin-top: var(--space-2);
+  }
+  li a {
+    font-weight: 600;
+    color: var(--color-text);
+    text-decoration: none;
+  }
+  li a:hover {
+    color: var(--color-accent);
+  }
+  .date {
+    display: block;
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+</style>

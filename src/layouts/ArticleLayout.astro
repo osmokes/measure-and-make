@@ -1,20 +1,29 @@
 ---
-// Wraps a single article: header (topic, title, standfirst, dates) and body,
-// inside the site-wide BaseLayout.
+// Wraps a single article: header (topic, title, standfirst, dates, reading
+// time), contents list, body, and "More in <topic>", inside BaseLayout.
+import type { MarkdownHeading } from "astro";
 import { getImage } from "astro:assets";
 import BaseLayout from "./BaseLayout.astro";
 import FormattedDate from "../components/FormattedDate.astro";
+import TableOfContents from "../components/TableOfContents.astro";
+import MoreInTopic from "../components/MoreInTopic.astro";
 import type { Article } from "../lib/articles";
 import { getTopicMap, topicOf } from "../lib/topics";
+import { readingTimeLabel } from "../lib/reading-time";
 
 interface Props {
   article: Article;
+  /** The article's headings, from render(). */
+  headings: MarkdownHeading[];
+  /** Other articles in the same topic, newest first. */
+  related: Article[];
 }
 
-const { article } = Astro.props;
+const { article, headings, related } = Astro.props;
 const { title, description, pubDate, updatedDate, draft, image, imageAlt } =
   article.data;
 const topic = topicOf(article, await getTopicMap());
+const readingTime = readingTimeLabel(article.body ?? "");
 
 // Cover image for link previews only (never shown on the page). getImage()
 // makes a 1200 px wide JPEG, a size and format every preview service accepts.
@@ -44,7 +53,10 @@ const ogImage = cover && {
     )
   }
   <meta slot="head" property="article:section" content={topic.data.name} />
-  <article>
+  {/* data-pagefind-body: only this part of the site goes into the search
+       index, so results point at articles rather than lists that repeat
+       their titles. */}
+  <article data-pagefind-body>
     <header class="article-header">
       {draft && <p class="draft-notice">Draft: not included in the built site.</p>}
       <p class="topic">
@@ -62,11 +74,17 @@ const ogImage = cover && {
             </>
           )
         }
+        {` · ${readingTime}`}
       </p>
     </header>
+    {/* data-pagefind-ignore keeps the contents list out of search results. */}
+    <div data-pagefind-ignore>
+      <TableOfContents headings={headings} />
+    </div>
     {/* The rendered Markdown goes here. */}
     <slot />
   </article>
+  <MoreInTopic topic={topic} articles={related} />
 </BaseLayout>
 
 <style>

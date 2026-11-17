@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro check && astro build",
+    "build": "astro check && astro build && pagefind --site dist",
     "preview": "astro preview",
     "check": "astro check"
   },
@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
+    "pagefind": "^1.6.0",
     "typescript": "^6.0.3"
   },
   "packageManager": "npm@11.20.0"

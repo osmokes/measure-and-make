@@ -4,6 +4,7 @@
 import FormattedDate from "./FormattedDate.astro";
 import type { Article } from "../lib/articles";
 import { getTopicMap, topicOf } from "../lib/topics";
+import { readingTimeLabel } from "../lib/reading-time";
 
 interface Props {
   articles: Article[];
@@ -38,6 +39,7 @@ const items = articles.map((article) => ({
               can't reach the <time> that FormattedDate renders. */}
           <p class="meta">
             <FormattedDate date={article.data.pubDate} />
+            {` · ${readingTimeLabel(article.body ?? "")}`}
             {showTopic && (
               <>
                 {" · "}

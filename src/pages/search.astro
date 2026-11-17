@@ -1,0 +1,81 @@
+---
+// "/search/": full-text search over the articles, powered by Pagefind.
+//
+// How it works: after `astro build`, the build script runs
+// `pagefind --site dist`. Pagefind reads the finished HTML (only the parts
+// marked data-pagefind-body, i.e. article text), and writes a compact search
+// index plus a ready-made search box into dist/pagefind/. This page loads
+// that search box. It is the only page on the site that uses JavaScript.
+//
+// In `npm run dev` the index doesn't exist yet, so we show a note instead.
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const isDev = import.meta.env.DEV;
+---
+
+<BaseLayout title="Search" description="Search every article.">
+  <h1>Search</h1>
+  {
+    isDev ? (
+      <p class="note">
+        Search works only on the built site, because Pagefind creates its index
+        after <code>astro build</code>. Run <code>npm run build</code> then
+        <code>npm run preview</code> to try it.
+      </p>
+    ) : (
+      <>
+        <div id="search" />
+        <noscript>
+          <p>Search needs JavaScript. You can browse <a href="/articles/">all articles</a> or look by <a href="/topics/">topic</a> instead.</p>
+        </noscript>
+      </>
+    )
+  }
+
+  {/* Pagefind's own files, from dist/pagefind/. is:inline tells Astro to
+       leave these tags exactly as written instead of bundling them. */}
+  {!isDev && <link slot="head" rel="stylesheet" href="/pagefind/pagefind-ui.css" />}
+  {
+    !isDev && (
+      <>
+        <script is:inline src="/pagefind/pagefind-ui.js"></script>
+        <script is:inline>
+          window.addEventListener("DOMContentLoaded", () => {
+            new PagefindUI({
+              element: "#search",
+              showSubResults: true, // also link to matching sections
+              showImages: false,
+              autofocus: true,
+            });
+          });
+        </script>
+      </>
+    )
+  }
+</BaseLayout>
+
+<style is:global>
+  /* Pagefind's search box reads these variables; map them to our tokens so
+     it matches the site and follows dark mode automatically. */
+  #search {
+    --pagefind-ui-font: var(--font-ui);
+    --pagefind-ui-text: var(--color-text);
+    --pagefind-ui-background: var(--color-bg);
+    --pagefind-ui-border: var(--color-rule);
+    --pagefind-ui-tag: var(--color-surface);
+    --pagefind-ui-primary: var(--color-accent);
+    --pagefind-ui-border-width: 1px;
+    --pagefind-ui-border-radius: 4px;
+    --pagefind-ui-scale: 0.9;
+  }
+  #search mark {
+    background: var(--color-surface);
+    color: var(--color-accent);
+  }
+</style>
+
+<style>
+  .note {
+    color: var(--color-muted);
+  }
+</style>

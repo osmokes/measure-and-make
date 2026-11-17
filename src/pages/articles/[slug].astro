@@ -10,26 +10,35 @@ import { getArticles, type Article } from "../../lib/articles";
 import katexCssUrl from "katex/dist/katex.min.css?url";
 
 export async function getStaticPaths() {
-  const articles = await getArticles();
+  const articles = await getArticles(); // newest first
   return articles.map((article) => ({
     params: { slug: article.id }, // fills in [slug]
-    props: { article }, // passed to this page as Astro.props
+    props: {
+      article,
+      // Other articles in the same topic, for "More in <topic>".
+      related: articles.filter(
+        (other) =>
+          other.id !== article.id && other.data.topic.id === article.data.topic.id,
+      ),
+    }, // passed to this page as Astro.props
   }));
 }
 
 interface Props {
   article: Article;
+  related: Article[];
 }
 
-const { article } = Astro.props;
+const { article, related } = Astro.props;
 // Turn the article's Markdown into HTML. <Content /> outputs it.
+// `headings` lists every heading with its id, for the table of contents.
 // remarkPluginFrontmatter holds data added by Markdown plugins; our KaTeX
 // plugin (plugins/katex.mjs) sets hasMath when the article contains maths.
-const { Content, remarkPluginFrontmatter } = await render(article);
+const { Content, headings, remarkPluginFrontmatter } = await render(article);
 const hasMath = remarkPluginFrontmatter.hasMath === true;
 ---
 
-<ArticleLayout article={article}>
+<ArticleLayout article={article} headings={headings} related={related}>
   {hasMath && <link slot="head" rel="stylesheet" href={katexCssUrl} />}
   <Content />
 </ArticleLayout>

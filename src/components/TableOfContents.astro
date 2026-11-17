@@ -1,0 +1,74 @@
+---
+// "Contents" links to an article's sections. Astro collects every heading
+// while rendering the Markdown, with the id it gave each one, so we only
+// have to turn them into links.
+import type { MarkdownHeading } from "astro";
+
+interface Props {
+  headings: MarkdownHeading[];
+}
+
+/** Below this many ## sections a contents list is more clutter than help. */
+const MIN_SECTIONS = 3;
+
+// Only ## and ### (depth 2 and 3). The article title is the page's single
+// # heading, and deeper levels would make the list too long. The footnotes'
+// "Notes" heading is generated, not written, so it's skipped too.
+const items = Astro.props.headings.filter(
+  (h) => (h.depth === 2 || h.depth === 3) && h.slug !== "footnote-label",
+);
+const sectionCount = items.filter((h) => h.depth === 2).length;
+---
+
+{
+  sectionCount >= MIN_SECTIONS && (
+    <nav class="toc" aria-labelledby="toc-heading">
+      <h2 id="toc-heading">Contents</h2>
+      <ol>
+        {items.map((h) => (
+          <li class={h.depth === 3 ? "sub" : undefined}>
+            <a href={`#${h.slug}`}>{h.text}</a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  )
+}
+
+<style>
+  .toc {
+    margin: 0 0 var(--space-5);
+    padding: var(--space-3) var(--space-4);
+    border-left: 3px solid var(--color-rule);
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+  }
+  h2 {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-muted);
+    margin: 0 0 var(--space-2);
+  }
+  ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  li + li {
+    margin-top: var(--space-1);
+  }
+  .sub {
+    padding-left: var(--space-3);
+  }
+  a {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+  a:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+</style>

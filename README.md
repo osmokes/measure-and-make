@@ -32,7 +32,7 @@ npm install
 |---|---|
 | `npm run dev` | Start a local server at <http://localhost:4321> that reloads on save |
 | `npm run check` | Type-check `.astro` and `.ts` files |
-| `npm run build` | Type-check, then build the static site into `dist/` |
+| `npm run build` | Type-check, build the static site into `dist/`, then index it for search (Pagefind) |
 | `npm run preview` | Serve the built `dist/` folder locally, as visitors would see it |
 
 Stop the dev server with <kbd>Ctrl</kbd>+<kbd>C</kbd>.
@@ -53,7 +53,7 @@ src/
   lib/               Shared TypeScript helpers (articles, topics, feed)
   pages/             Each .astro file here becomes a page; index.astro is "/"
   layouts/           Page shells; BaseLayout.astro wraps every page
-  components/        Reusable pieces (site header, footer)
+  components/        Reusable pieces (header, footer, lists, contents, related)
   styles/global.css  Design tokens and base typography
 ```
 
@@ -92,6 +92,7 @@ Astro scopes these so they only affect that component.
 | `@astrojs/markdown-satteri` | Astro 7's Markdown engine (Sätteri). Already part of Astro; listed because `astro.config.mjs` imports it to turn on maths and add plugins |
 | `katex` | Renders LaTeX maths to HTML at build time (see `plugins/katex.mjs`) |
 | `@astrojs/sitemap` | Generates the sitemap from every built page |
+| `pagefind` (dev) | Builds the search index after `astro build` |
 | `@astrojs/check` (dev) | Type checker behind `npm run check` |
 | `typescript` (dev) | Required by the checker. Pinned to 6.x because `@astrojs/check` does not support TypeScript 7 yet |
 
@@ -229,6 +230,18 @@ reference them relative to the article:
   can't show SVG. Astro makes a 1200 px JPEG from it, and `imageAlt` is
   required alongside it.
 
+### What every article gets automatically
+
+- **Reading time** ("3 min read") next to the date, at 230 words a minute.
+  Code blocks, display maths and images aren't counted
+  (`src/lib/reading-time.ts`).
+- **Contents:** articles with **3 or more `##` sections** get a "Contents"
+  list linking to each `##` and `###` heading
+  (`src/components/TableOfContents.astro`). Fewer sections, no list.
+- **More in this topic:** up to 3 other articles from the same topic, newest
+  first, at the end (`src/components/MoreInTopic.astro`). Hidden when the
+  topic has no other articles.
+
 ### How pages are generated
 
 - `src/lib/articles.ts` has `getArticles()`, the one place that hides drafts
@@ -252,6 +265,23 @@ reference them relative to the article:
 | `/rss.xml` | `src/pages/rss.xml.ts` | RSS feed with the full text of every published article |
 | `/sitemap-index.xml` | `@astrojs/sitemap` | Every page, for search engines |
 | `/robots.txt` | `src/pages/robots.txt.ts` | Points crawlers at the sitemap |
+| `/search/` | `src/pages/search.astro` + Pagefind | Full-text search of the articles |
+
+### Search
+
+[Pagefind](https://pagefind.app) runs as the last step of `npm run build`
+(`pagefind --site dist`). It reads the finished HTML and writes a search index
+and a ready-made search box into `dist/pagefind/`.
+
+- **What's indexed:** only article text, the part inside
+  `<article data-pagefind-body>`, so results point at articles rather than at
+  lists. The contents list is excluded with `data-pagefind-ignore`.
+- **The only JavaScript on the site:** `/search/` is the only page that loads
+  any. Readers without JavaScript see links to the archive and topics instead.
+- **Testing search:** search doesn't work in `npm run dev`, because the index
+  doesn't exist yet. Run `npm run build`, then `npm run preview`.
+- **Look:** the search box's colours come from our design tokens (in
+  `search.astro`), so it follows dark mode.
 
 - **Endpoints:** `.ts` files in `src/pages/` are *endpoints*. They return any
   kind of file (here XML or text) instead of an HTML page.
