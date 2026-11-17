@@ -1,0 +1,25 @@
+---
+interface Props {
+  date: Date;
+}
+
+const { date } = Astro.props;
+
+// Frontmatter dates like 2026-11-17 are read as midnight UTC. Formatting them
+// in the build machine's local time zone could show the previous day (e.g. on
+// a server in America), so format in UTC too.
+const formatter = new Intl.DateTimeFormat("en-GB", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+  timeZone: "UTC",
+});
+
+// Comments: these frontmatter comments never reach the browser. Below the
+// fence, HTML comments (<!-- -->) are sent to every reader, so use
+// {/* JSX-style */} comments there instead; Astro removes them at build.
+
+// `datetime` gives machines (search engines, feed readers) the exact date.
+---
+
+<time datetime={date.toISOString().slice(0, 10)}>{formatter.format(date)}</time>

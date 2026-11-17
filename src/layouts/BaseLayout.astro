@@ -31,11 +31,11 @@ const fullTitle = title ? `${title} · ${SITE_TITLE}` : SITE_TITLE;
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <!-- Browser UI colour (e.g. mobile address bar) for each scheme. -->
+    {/* Browser UI colour (e.g. mobile address bar) for each scheme. */}
     <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#161514" media="(prefers-color-scheme: dark)" />
-    <!-- Emits the @font-face rules. Only the upright (normal) file is preloaded,
-         because every page needs it straight away; italic loads when used. -->
+    {/* Emits the @font-face rules. Only the upright (normal) file is preloaded,
+         because every page needs it straight away; italic loads when used. */}
     <Font cssVariable="--font-serif" preload={[{ style: "normal" }]} />
   </head>
   <body>

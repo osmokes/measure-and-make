@@ -1,0 +1,75 @@
+---
+// A list of article summaries, used on the home page and the archive.
+import FormattedDate from "./FormattedDate.astro";
+import type { Article } from "../lib/articles";
+
+interface Props {
+  articles: Article[];
+}
+
+const { articles } = Astro.props;
+---
+
+{
+  articles.length === 0 ? (
+    <p class="empty">No articles yet.</p>
+  ) : (
+    <ol class="article-list">
+      {articles.map((article) => (
+        <li>
+          <h2>
+            <a href={`/articles/${article.id}/`}>{article.data.title}</a>
+            {article.data.draft && <span class="draft">Draft</span>}
+          </h2>
+          <p>{article.data.description}</p>
+          {/* Wrapped in <p class="date"> because scoped styles in this file
+              can't reach the <time> that FormattedDate renders. */}
+          <p class="date">
+            <FormattedDate date={article.data.pubDate} />
+          </p>
+        </li>
+      ))}
+    </ol>
+  )
+}
+
+<style>
+  .article-list {
+    list-style: none;
+    padding: 0;
+  }
+  .article-list li + li {
+    margin-top: var(--space-5);
+  }
+  h2 {
+    font-size: var(--text-xl);
+    margin: 0 0 var(--space-2);
+  }
+  h2 a {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+  h2 a:hover {
+    color: var(--color-accent);
+  }
+  p {
+    margin: 0 0 var(--space-1);
+  }
+  .date,
+  .empty {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+  .draft {
+    margin-left: var(--space-2);
+    padding: 0.1em 0.5em;
+    border: 1px solid var(--color-accent);
+    border-radius: 3px;
+    color: var(--color-accent);
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    vertical-align: middle;
+  }
+</style>

@@ -4,7 +4,10 @@ import { SITE_TITLE } from "../consts";
 
 <header class="site-header">
   <a class="site-name" href="/">{SITE_TITLE}</a>
-  <!-- Navigation links (articles, topics, about) arrive in later milestones. -->
+  <nav aria-label="Main">
+    <a href="/articles/">Articles</a>
+    {/* Topics and About arrive in later milestones. */}
+  </nav>
 </header>
 
 <style>
@@ -27,6 +30,15 @@ import { SITE_TITLE } from "../consts";
     text-decoration: none;
   }
   .site-name:hover {
+    color: var(--color-accent);
+  }
+  nav a {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+    text-decoration: none;
+  }
+  nav a:hover {
     color: var(--color-accent);
   }
 </style>

@@ -1,0 +1,28 @@
+---
+// One file, many pages. The [slug] in the filename is a placeholder: at build
+// time Astro calls getStaticPaths() and writes one HTML page per article,
+// e.g. /articles/how-bridges-carry-load/.
+import { render } from "astro:content";
+import ArticleLayout from "../../layouts/ArticleLayout.astro";
+import { getArticles, type Article } from "../../lib/articles";
+
+export async function getStaticPaths() {
+  const articles = await getArticles();
+  return articles.map((article) => ({
+    params: { slug: article.id }, // fills in [slug]
+    props: { article }, // passed to this page as Astro.props
+  }));
+}
+
+interface Props {
+  article: Article;
+}
+
+const { article } = Astro.props;
+// Turn the article's Markdown into HTML. <Content /> outputs it.
+const { Content } = await render(article);
+---
+
+<ArticleLayout article={article}>
+  <Content />
+</ArticleLayout>

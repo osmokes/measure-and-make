@@ -45,6 +45,9 @@ tsconfig.json        TypeScript settings (Astro's "strict" preset)
 public/              Copied to the site as-is (favicon, robots.txt, …)
 src/
   consts.ts          Site title and description, used everywhere
+  content.config.ts  Content collections and their frontmatter schemas
+  content/articles/  Articles, one Markdown file each
+  lib/               Shared TypeScript helpers (getArticles)
   pages/             Each .astro file here becomes a page; index.astro is "/"
   layouts/           Page shells; BaseLayout.astro wraps every page
   components/        Reusable pieces (site header, footer)
@@ -87,7 +90,45 @@ Astro scopes these so they only affect that component.
 
 ## Writing articles
 
-_Added in Milestones 3–5 (content collections, maths, code, references, taxonomy)._
+Articles are Markdown files in `src/content/articles/`. The file name becomes
+the URL, so `how-bridges-carry-load.md` is published at
+`/articles/how-bridges-carry-load/`. Use lowercase words separated by hyphens,
+and keep all articles directly in that folder (no subfolders).
+
+Each file starts with frontmatter:
+
+```markdown
+---
+title: How bridges carry load
+description: One or two sentences shown under the title, in lists and in search results.
+pubDate: 2026-11-17
+updatedDate: 2026-12-01   # optional
+draft: true               # optional; remove it to publish
+---
+
+The article text starts here, in ordinary Markdown.
+```
+
+- **Schema:** the fields are defined in `src/content.config.ts`. A missing or
+  wrongly typed field stops `npm run build` with an error naming the file.
+- **Drafts:** `draft: true` articles appear in `npm run dev` with a "Draft"
+  label and are left out of `npm run build`, so they are never published.
+- **Dates:** write them as `YYYY-MM-DD`. They are shown as "17 November 2026".
+  An impossible date such as `2026-02-30` is **not** rejected: the YAML parser
+  rolls it over to 2 March. Check the date shown in the dev server.
+- **New collections:** after creating `src/content.config.ts` or adding a
+  collection, restart `npm run dev`.
+
+_Maths, code highlighting, references and topics are added in Milestones 4–5._
+
+### How pages are generated
+
+- `src/lib/articles.ts` has `getArticles()`, the one place that hides drafts
+  and sorts newest first.
+- `src/pages/articles/[slug].astro` makes one page per article. `[slug]` is
+  filled in from each file name by `getStaticPaths()`.
+- `src/pages/articles/index.astro` is the full archive. The home page shows the
+  latest five.
 
 ## Deployment
 

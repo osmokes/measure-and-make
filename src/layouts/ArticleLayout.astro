@@ -1,0 +1,62 @@
+---
+// Wraps a single article: header (title, standfirst, dates) and body,
+// inside the site-wide BaseLayout.
+import BaseLayout from "./BaseLayout.astro";
+import FormattedDate from "../components/FormattedDate.astro";
+import type { Article } from "../lib/articles";
+
+interface Props {
+  article: Article;
+}
+
+const { title, description, pubDate, updatedDate, draft } =
+  Astro.props.article.data;
+---
+
+<BaseLayout title={title} description={description}>
+  <article>
+    <header class="article-header">
+      {draft && <p class="draft-notice">Draft: not included in the built site.</p>}
+      <h1>{title}</h1>
+      <p class="standfirst">{description}</p>
+      <p class="dates">
+        <FormattedDate date={pubDate} />
+        {
+          updatedDate && (
+            <>
+              {" · Updated "}
+              <FormattedDate date={updatedDate} />
+            </>
+          )
+        }
+      </p>
+    </header>
+    {/* The rendered Markdown goes here. */}
+    <slot />
+  </article>
+</BaseLayout>
+
+<style>
+  .article-header {
+    margin-bottom: var(--space-5);
+  }
+  .article-header h1 {
+    margin-bottom: var(--space-3);
+  }
+  .standfirst {
+    font-size: var(--text-lg);
+    color: var(--color-muted);
+    margin-bottom: var(--space-3);
+  }
+  .dates,
+  .draft-notice {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+    margin: 0;
+  }
+  .draft-notice {
+    color: var(--color-accent);
+    margin-bottom: var(--space-3);
+  }
+</style>
