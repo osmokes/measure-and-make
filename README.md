@@ -40,8 +40,9 @@ Stop the dev server with <kbd>Ctrl</kbd>+<kbd>C</kbd>.
 ### Project structure
 
 ```text
-astro.config.mjs     Astro configuration (fonts, HTML whitespace handling)
+astro.config.mjs     Astro configuration (fonts, whitespace, Markdown features)
 tsconfig.json        TypeScript settings (Astro's "strict" preset)
+plugins/katex.mjs    Markdown plugin that renders maths with KaTeX
 public/              Copied to the site as-is (favicon, robots.txt, …)
 src/
   consts.ts          Site title and description, used everywhere
@@ -85,6 +86,8 @@ Astro scopes these so they only affect that component.
 | Package | Why |
 |---|---|
 | `astro` | The site framework and build tool |
+| `@astrojs/markdown-satteri` | Astro 7's Markdown engine (Sätteri). Already part of Astro; listed because `astro.config.mjs` imports it to turn on maths and add plugins |
+| `katex` | Renders LaTeX maths to HTML at build time (see `plugins/katex.mjs`) |
 | `@astrojs/check` (dev) | Type checker behind `npm run check` |
 | `typescript` (dev) | Required by the checker. Pinned to 6.x because `@astrojs/check` does not support TypeScript 7 yet |
 
@@ -119,7 +122,56 @@ The article text starts here, in ordinary Markdown.
 - **New collections:** after creating `src/content.config.ts` or adding a
   collection, restart `npm run dev`.
 
-_Maths, code highlighting, references and topics are added in Milestones 4–5._
+### Maths
+
+Write LaTeX between dollar signs. `$E = mc^2$` is inline, and a block on its
+own lines is displayed centred:
+
+```markdown
+$$
+\delta = \frac{F L^3}{48 E I}
+$$
+```
+
+- **Rendering:** equations are rendered by KaTeX at build time
+  (`plugins/katex.mjs`), so readers get HTML, not JavaScript.
+- **Stylesheet:** KaTeX's stylesheet and fonts load only on articles that
+  contain maths.
+- **Mistakes:** a LaTeX mistake stops the build with a "KaTeX parse error"
+  naming the file.
+- **Dollar signs:** to write a literal dollar sign, escape it as `\$`.
+
+### Code
+
+Use fenced code blocks with a language name:
+
+````markdown
+```ts
+const answer = 42;
+```
+````
+
+Shiki colours them at build time with the `github-light` and `github-dark`
+themes (set in `astro.config.mjs`), following the reader's dark mode. Long
+lines scroll sideways inside the block.
+
+### Footnotes and references
+
+Use Markdown footnotes. The marker goes in the text, and the note can go
+anywhere in the file (conventionally at the end):
+
+```markdown
+The deflection follows the standard formula.[^gere]
+
+[^gere]: J. M. Gere and B. J. Goodno, *Mechanics of Materials*, 9th ed., 2018.
+```
+
+- **Numbering:** notes are numbered in order of first use and collected under
+  "Notes" at the end of the article, with ↩ links back to the text.
+- **Names:** use names like `[^gere]` rather than numbers, so notes can be
+  reordered freely.
+
+_Topics and tags are added in Milestone 5._
 
 ### How pages are generated
 

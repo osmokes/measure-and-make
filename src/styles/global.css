@@ -194,6 +194,59 @@ pre {
   overflow-x: auto; /* long lines scroll inside the block, not the page */
   line-height: 1.5;
 }
+pre code {
+  font-size: inherit; /* don't shrink twice (pre is already 0.85em) */
+}
+
+/* Syntax highlighting (Shiki). Each highlighted token carries its light
+   colour inline plus a --shiki-dark variable. We keep our own background in
+   both schemes and switch token colours to the dark theme in dark mode.
+   !important is needed because Shiki writes its colours as inline styles. */
+pre.astro-code {
+  background-color: var(--color-surface) !important;
+}
+@media (prefers-color-scheme: dark) {
+  .astro-code,
+  .astro-code span {
+    color: var(--shiki-dark) !important;
+  }
+}
+
+/* Maths (KaTeX). Wide equations scroll sideways on phones instead of
+   overflowing the page. */
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: var(--space-1) 0;
+}
+
+/* Footnotes ("Notes"), generated from [^1] references in Markdown. */
+.footnotes {
+  margin-top: var(--space-5);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-rule);
+  font-size: var(--text-sm);
+  color: var(--color-muted);
+}
+.footnotes h2 {
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 var(--space-3);
+}
+.footnotes p {
+  margin: 0;
+}
+/* The superscript number in the text: keep it from stretching the line. */
+sup {
+  line-height: 0;
+}
+[data-footnote-ref] {
+  text-decoration: none;
+  padding: 0 0.1em;
+}
 
 /* Tables */
 table {

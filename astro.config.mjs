@@ -1,5 +1,7 @@
 // Astro configuration. See https://docs.astro.build/en/reference/configuration-reference/
 import { defineConfig, fontProviders } from "astro/config";
+import { satteri } from "@astrojs/markdown-satteri";
+import { katexPlugin } from "./plugins/katex.mjs";
 
 export default defineConfig({
   // `site` (the public URL) will be set once the domain is decided.
@@ -25,4 +27,22 @@ export default defineConfig({
       fallbacks: ["Georgia", "serif"],
     },
   ],
+
+  markdown: {
+    // Sätteri is Astro 7's built-in Markdown engine; calling satteri() lets
+    // us switch on extra syntax and add plugins.
+    processor: satteri({
+      features: {
+        math: true, // parse $inline$ and $$display$$ maths
+        gfm: { footnotes: { label: "Notes" } }, // [^1] footnotes
+      },
+      mdastPlugins: [katexPlugin], // plugins/katex.mjs renders the maths
+    }),
+
+    // Code blocks: Shiki colours them at build time (no JavaScript sent to
+    // readers). Two themes; global.css switches to the dark one in dark mode.
+    shikiConfig: {
+      themes: { light: "github-light", dark: "github-dark" },
+    },
+  },
 });

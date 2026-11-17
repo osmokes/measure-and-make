@@ -5,6 +5,9 @@
 import { render } from "astro:content";
 import ArticleLayout from "../../layouts/ArticleLayout.astro";
 import { getArticles, type Article } from "../../lib/articles";
+// `?url` gives us the stylesheet's final URL instead of adding it to every
+// page built from this file. We then link it only where it's needed.
+import katexCssUrl from "katex/dist/katex.min.css?url";
 
 export async function getStaticPaths() {
   const articles = await getArticles();
@@ -20,9 +23,13 @@ interface Props {
 
 const { article } = Astro.props;
 // Turn the article's Markdown into HTML. <Content /> outputs it.
-const { Content } = await render(article);
+// remarkPluginFrontmatter holds data added by Markdown plugins; our KaTeX
+// plugin (plugins/katex.mjs) sets hasMath when the article contains maths.
+const { Content, remarkPluginFrontmatter } = await render(article);
+const hasMath = remarkPluginFrontmatter.hasMath === true;
 ---
 
 <ArticleLayout article={article}>
+  {hasMath && <link slot="head" rel="stylesheet" href={katexCssUrl} />}
   <Content />
 </ArticleLayout>

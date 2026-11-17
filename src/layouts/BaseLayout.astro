@@ -37,6 +37,8 @@ const fullTitle = title ? `${title} · ${SITE_TITLE}` : SITE_TITLE;
     {/* Emits the @font-face rules. Only the upright (normal) file is preloaded,
          because every page needs it straight away; italic loads when used. */}
     <Font cssVariable="--font-serif" preload={[{ style: "normal" }]} />
+    {/* Pages can add their own <head> tags with slot="head". */}
+    <slot name="head" />
   </head>
   <body>
     <div class="page">

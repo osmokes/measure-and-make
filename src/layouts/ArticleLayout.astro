@@ -14,6 +14,8 @@ const { title, description, pubDate, updatedDate, draft } =
 ---
 
 <BaseLayout title={title} description={description}>
+  {/* Pass any slot="head" content from the page on to BaseLayout's <head>. */}
+  <slot name="head" slot="head" />
   <article>
     <header class="article-header">
       {draft && <p class="draft-notice">Draft: not included in the built site.</p>}
