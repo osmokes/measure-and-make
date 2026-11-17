@@ -40,11 +40,42 @@ Stop the dev server with <kbd>Ctrl</kbd>+<kbd>C</kbd>.
 ### Project structure
 
 ```text
-astro.config.mjs     Astro configuration
+astro.config.mjs     Astro configuration (fonts, HTML whitespace handling)
 tsconfig.json        TypeScript settings (Astro's "strict" preset)
 public/              Copied to the site as-is (favicon, robots.txt, …)
-src/pages/           Each .astro file here becomes a page; index.astro is "/"
+src/
+  consts.ts          Site title and description, used everywhere
+  pages/             Each .astro file here becomes a page; index.astro is "/"
+  layouts/           Page shells; BaseLayout.astro wraps every page
+  components/        Reusable pieces (site header, footer)
+  styles/global.css  Design tokens and base typography
 ```
+
+`src/pages/styleguide.astro` (at `/styleguide`) shows every text element on one
+page. Use it to check typography changes by eye. It will be hidden before launch.
+
+### Design system
+
+All styling is plain CSS. The values live as custom properties ("design tokens")
+at the top of `src/styles/global.css`:
+
+- **Colours:** paper-white background, near-black text and an oxblood accent
+  (`--color-accent`). Dark mode redefines the same tokens inside
+  `@media (prefers-color-scheme: dark)`, so it follows the reader's OS setting
+  with no JavaScript. Every text/background pair passes WCAG AA contrast.
+- **Fonts:** article text uses **Source Serif 4**, set up in `astro.config.mjs`
+  through Astro's built-in Fonts API. Astro downloads it at build time and
+  serves it from this site. UI text uses the system sans-serif and code uses
+  the system monospace (`--font-ui`, `--font-mono`).
+- **Sizes:** body text scales fluidly from 18px to 20px, and the reading width
+  is capped at about 68 characters (`--measure`).
+
+Component-specific styles go in a `<style>` block inside the `.astro` file.
+Astro scopes these so they only affect that component.
+
+> **Whitespace:** `compressHTML: true` is set in `astro.config.mjs`. Astro 7's
+> default follows React's whitespace rules and would delete the space at a line
+> break next to a tag, so `Here is⏎<a>a link</a>` would render as "Here isa link".
 
 ### Dependencies
 

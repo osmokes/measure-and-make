@@ -1,25 +1,11 @@
 ---
-// The "frontmatter" between the --- fences runs at build time (on your machine
-// or Cloudflare's), never in the visitor's browser.
-const title = "Measure and Make";
-const year = new Date().getFullYear();
+// Home page ("/"). The layout supplies <html>, <head>, header and footer;
+// this file only holds what is unique to the page.
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { SITE_TITLE } from "../consts";
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>{title}</title>
-  </head>
-  <body>
-    <main>
-      <h1>{title}</h1>
-      <p>An independent engineering publication. Coming soon!</p>
-    </main>
-    <footer>
-      <p>&copy; {year} {title}</p>
-    </footer>
-  </body>
-</html>
+<BaseLayout>
+  <h1>{SITE_TITLE}</h1>
+  <p>An independent engineering publication. Coming soon!</p>
+</BaseLayout>

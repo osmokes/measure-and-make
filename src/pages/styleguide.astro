@@ -1,0 +1,70 @@
+---
+// Temporary page for checking typography by eye: every element an article
+// can contain. Visit /styleguide in the dev server. To be hidden or removed
+// before launch.
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Style guide" description="Typography test page.">
+  <h1>Heading level one: how bridges carry load</h1>
+  <p>
+    Body text is set in <em>Source Serif 4</em>. A paragraph should hold about
+    sixty to seventy characters per line, which keeps the eye from losing its
+    place on the way back to the start of the next line. Here is
+    <a href="/">a link</a>, some <strong>strong text</strong>, and a bit of
+    inline code: <code>npm run build</code>. Press <kbd>Ctrl</kbd>+<kbd>C</kbd>
+    to stop the server.
+  </p>
+
+  <h2>Heading level two</h2>
+  <p>
+    A second paragraph, so spacing between paragraphs and headings can be
+    judged. Engineering writing often mixes prose with numbers like 3.14159,
+    1,024 and 0.001&nbsp;mm.
+  </p>
+
+  <h3>Heading level three</h3>
+  <ul>
+    <li>An unordered list item</li>
+    <li>A second item that is long enough to wrap onto another line, to check the indentation of the wrapped text</li>
+    <li>A third item</li>
+  </ul>
+  <ol>
+    <li>Measure twice</li>
+    <li>Cut once</li>
+    <li>Document what you did</li>
+  </ol>
+
+  <h4>Heading level four</h4>
+  <blockquote>
+    <p>Scientists study the world as it is; engineers create the world that has never been.</p>
+  </blockquote>
+
+  <!-- In .astro files { } runs JavaScript, so code containing braces is
+       passed as a string inside { } to be printed literally. -->
+  <pre><code>{`// A code block: long lines scroll sideways instead of widening the page.
+function deflection(load: number, length: number, e: number, i: number): number {
+  return (load * length ** 3) / (48 * e * i);
+}`}</code></pre>
+
+  <table>
+    <thead>
+      <tr><th>Material</th><th>Density (kg/m³)</th><th>Young's modulus (GPa)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Steel</td><td>7850</td><td>200</td></tr>
+      <tr><td>Aluminium</td><td>2700</td><td>69</td></tr>
+      <tr><td>Oak</td><td>750</td><td>11</td></tr>
+    </tbody>
+  </table>
+
+  <hr />
+
+  <figure>
+    <svg viewBox="0 0 400 80" role="img" aria-label="Placeholder diagram">
+      <rect x="1" y="1" width="398" height="78" fill="none" stroke="currentColor" stroke-dasharray="4 4"></rect>
+      <text x="200" y="45" text-anchor="middle" fill="currentColor" font-size="14">figure placeholder</text>
+    </svg>
+    <figcaption>Figure 1. A caption in the UI font, in the muted colour.</figcaption>
+  </figure>
+</BaseLayout>

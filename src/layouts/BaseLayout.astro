@@ -1,0 +1,59 @@
+---
+// The shared HTML shell for every page. A page uses it like this:
+//
+//   <BaseLayout title="About">
+//     ...page content...
+//   </BaseLayout>
+//
+// and its content is inserted where <slot /> appears below.
+import { Font } from "astro:assets";
+import SiteHeader from "../components/SiteHeader.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
+import "../styles/global.css";
+
+interface Props {
+  /** Page title. Omit it on the home page to show just the site name. */
+  title?: string;
+  /** Text for search results and link previews. */
+  description?: string;
+}
+
+const { title, description = SITE_DESCRIPTION } = Astro.props;
+const fullTitle = title ? `${title} · ${SITE_TITLE}` : SITE_TITLE;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- Browser UI colour (e.g. mobile address bar) for each scheme. -->
+    <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#161514" media="(prefers-color-scheme: dark)" />
+    <!-- Emits the @font-face rules. Only the upright (normal) file is preloaded,
+         because every page needs it straight away; italic loads when used. -->
+    <Font cssVariable="--font-serif" preload={[{ style: "normal" }]} />
+  </head>
+  <body>
+    <div class="page">
+      <SiteHeader />
+      <main id="main">
+        <slot />
+      </main>
+      <SiteFooter />
+    </div>
+  </body>
+</html>
+
+<style>
+  /* Centre the content and cap its width at a comfortable reading measure.
+     min() keeps a gutter on narrow screens. */
+  .page {
+    width: min(var(--measure), 100% - 2 * var(--gutter));
+    margin-inline: auto;
+  }
+</style>
