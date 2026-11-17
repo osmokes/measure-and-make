@@ -1,8 +1,19 @@
-// Content collections: Astro's typed way of loading Markdown.
+// Content collections: Astro's typed way of loading Markdown and data files.
 // https://docs.astro.build/en/guides/content-collections/
-import { defineCollection } from "astro:content";
-import { glob } from "astro/loaders";
+import { defineCollection, reference } from "astro:content";
+import { file, glob } from "astro/loaders";
 import { z } from "astro/zod";
+
+const topics = defineCollection({
+  // Every top-level key in topics.yaml becomes one entry, with that key as
+  // its id (e.g. "structures").
+  loader: file("./src/content/topics.yaml"),
+  schema: z.object({
+    name: z.string(),
+    /** One line shown on the topics page and the topic's own page. */
+    description: z.string(),
+  }),
+});
 
 const articles = defineCollection({
   // Load every Markdown file in src/content/articles/. Each file's name
@@ -19,9 +30,11 @@ const articles = defineCollection({
     /** Written as 2026-11-17 in frontmatter; converted to a Date. */
     pubDate: z.coerce.date(),
     updatedDate: z.coerce.date().optional(),
+    /** The id of one topic from topics.yaml, e.g. `topic: structures`. */
+    topic: reference("topics"),
     /** Drafts are visible in `npm run dev` but never built. */
     draft: z.boolean().default(false),
   }),
 });
 
-export const collections = { articles };
+export const collections = { topics, articles };

@@ -2,6 +2,7 @@
 title: Hello, world
 description: What Measure and Make is for, and what to expect from it.
 pubDate: 2026-11-14
+topic: practice
 ---
 
 **Measure and Make** is an independent engineering publication: long-form writing about how things are designed, built and measured, from bridges to build systems.

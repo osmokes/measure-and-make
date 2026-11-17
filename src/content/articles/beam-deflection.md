@@ -2,6 +2,7 @@
 title: How far does a beam bend?
 description: The classic formula for a loaded beam, checked with a few lines of code.
 pubDate: 2026-11-16
+topic: structures
 ---
 
 Put a weight in the middle of a plank resting on two bricks and it sags. How much it sags depends on four things: the load $F$, the span $L$, the stiffness of the material $E$, and the shape of the cross-section $I$.

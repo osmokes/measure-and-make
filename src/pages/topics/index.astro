@@ -1,0 +1,55 @@
+---
+// "/topics/": every topic that has articles, with its description and count.
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getTopicsWithArticles } from "../../lib/topics";
+
+const topics = await getTopicsWithArticles();
+---
+
+<BaseLayout title="Topics" description="Articles grouped by topic.">
+  <h1>Topics</h1>
+  <ul class="topic-list">
+    {
+      topics.map(({ topic, articles }) => (
+        <li>
+          <h2>
+            <a href={`/topics/${topic.id}/`}>{topic.data.name}</a>
+          </h2>
+          <p>{topic.data.description}</p>
+          <p class="count">
+            {articles.length} {articles.length === 1 ? "article" : "articles"}
+          </p>
+        </li>
+      ))
+    }
+  </ul>
+</BaseLayout>
+
+<style>
+  .topic-list {
+    list-style: none;
+    padding: 0;
+  }
+  .topic-list li + li {
+    margin-top: var(--space-5);
+  }
+  h2 {
+    font-size: var(--text-xl);
+    margin: 0 0 var(--space-2);
+  }
+  h2 a {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+  h2 a:hover {
+    color: var(--color-accent);
+  }
+  p {
+    margin: 0 0 var(--space-1);
+  }
+  .count {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+</style>

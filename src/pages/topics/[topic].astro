@@ -1,0 +1,48 @@
+---
+// One page per topic, e.g. "/topics/structures/", listing its articles.
+// Works like pages/articles/[slug].astro: getStaticPaths() decides which
+// pages exist. Topics without articles get no page.
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ArticleList from "../../components/ArticleList.astro";
+import { getTopicsWithArticles, type TopicWithArticles } from "../../lib/topics";
+
+export async function getStaticPaths() {
+  const topics = await getTopicsWithArticles();
+  return topics.map((entry) => ({
+    params: { topic: entry.topic.id },
+    props: entry,
+  }));
+}
+
+type Props = TopicWithArticles;
+
+const { topic, articles } = Astro.props;
+---
+
+<BaseLayout title={topic.data.name} description={topic.data.description}>
+  <p class="kicker"><a href="/topics/">Topics</a></p>
+  <h1>{topic.data.name}</h1>
+  <p class="intro">{topic.data.description}</p>
+  {/* The topic is already the page heading, so don't repeat it per article. */}
+  <ArticleList articles={articles} showTopic={false} />
+</BaseLayout>
+
+<style>
+  .kicker {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    margin-bottom: var(--space-2);
+  }
+  .kicker a {
+    color: var(--color-muted);
+    text-decoration: none;
+  }
+  .kicker a:hover {
+    color: var(--color-accent);
+  }
+  .intro {
+    font-size: var(--text-lg);
+    color: var(--color-muted);
+    margin-bottom: var(--space-5);
+  }
+</style>

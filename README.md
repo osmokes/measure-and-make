@@ -48,7 +48,8 @@ src/
   consts.ts          Site title and description, used everywhere
   content.config.ts  Content collections and their frontmatter schemas
   content/articles/  Articles, one Markdown file each
-  lib/               Shared TypeScript helpers (getArticles)
+  content/topics.yaml  The list of topics
+  lib/               Shared TypeScript helpers (articles, topics)
   pages/             Each .astro file here becomes a page; index.astro is "/"
   layouts/           Page shells; BaseLayout.astro wraps every page
   components/        Reusable pieces (site header, footer)
@@ -105,6 +106,7 @@ Each file starts with frontmatter:
 title: How bridges carry load
 description: One or two sentences shown under the title, in lists and in search results.
 pubDate: 2026-11-17
+topic: structures         # one id from src/content/topics.yaml
 updatedDate: 2026-12-01   # optional
 draft: true               # optional; remove it to publish
 ---
@@ -171,7 +173,27 @@ The deflection follows the standard formula.[^gere]
 - **Names:** use names like `[^gere]` rather than numbers, so notes can be
   reordered freely.
 
-_Topics and tags are added in Milestone 5._
+### Topics
+
+Every article belongs to exactly one topic, named by its id in the
+frontmatter (`topic: structures`). The topics are defined in
+`src/content/topics.yaml`:
+
+```yaml
+structures:
+  name: Structures
+  description: Beams, bridges and buildings, and the loads they carry.
+```
+
+- **Adding a topic:** add an entry to `topics.yaml`, then restart
+  `npm run dev`.
+- **Renaming:** `name` and `description` can change at any time. The id
+  (`structures`) is the URL (`/topics/structures/`), so avoid changing it once
+  articles are published.
+- **Typos:** an article naming a topic that isn't in `topics.yaml` stops the
+  build with an error listing the valid ids.
+- **Empty topics:** a topic gets a page and appears on `/topics/` only once it
+  has a published article.
 
 ### How pages are generated
 
@@ -181,6 +203,11 @@ _Topics and tags are added in Milestone 5._
   filled in from each file name by `getStaticPaths()`.
 - `src/pages/articles/index.astro` is the full archive. The home page shows the
   latest five.
+- `src/lib/topics.ts` groups articles by topic. `topicOf()` looks up an
+  article's topic and throws on an unknown id, because Astro itself only logs
+  a broken reference and carries on building.
+- `src/pages/topics/index.astro` lists topics. `src/pages/topics/[topic].astro`
+  makes one page per topic.
 
 ## Deployment
 

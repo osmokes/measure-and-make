@@ -6,7 +6,8 @@ import { SITE_TITLE } from "../consts";
   <a class="site-name" href="/">{SITE_TITLE}</a>
   <nav aria-label="Main">
     <a href="/articles/">Articles</a>
-    {/* Topics and About arrive in later milestones. */}
+    <a href="/topics/">Topics</a>
+    {/* About arrives in a later milestone. */}
   </nav>
 </header>
 
@@ -31,6 +32,10 @@ import { SITE_TITLE } from "../consts";
   }
   .site-name:hover {
     color: var(--color-accent);
+  }
+  nav {
+    display: flex;
+    gap: var(--space-4);
   }
   nav a {
     font-family: var(--font-ui);

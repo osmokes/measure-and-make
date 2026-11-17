@@ -1,31 +1,49 @@
 ---
-// A list of article summaries, used on the home page and the archive.
+// A list of article summaries, used on the home page, the archive and
+// topic pages.
 import FormattedDate from "./FormattedDate.astro";
 import type { Article } from "../lib/articles";
+import { getTopicMap, topicOf } from "../lib/topics";
 
 interface Props {
   articles: Article[];
+  /** Show each article's topic next to its date. Off on topic pages. */
+  showTopic?: boolean;
 }
 
-const { articles } = Astro.props;
+const { articles, showTopic = true } = Astro.props;
+
+// Pair each article with its topic up front, so the template stays simple.
+// topicOf() throws (stopping the build) if a topic id is misspelt.
+const topics = await getTopicMap();
+const items = articles.map((article) => ({
+  article,
+  topic: topicOf(article, topics),
+}));
 ---
 
 {
-  articles.length === 0 ? (
+  items.length === 0 ? (
     <p class="empty">No articles yet.</p>
   ) : (
     <ol class="article-list">
-      {articles.map((article) => (
+      {items.map(({ article, topic }) => (
         <li>
           <h2>
             <a href={`/articles/${article.id}/`}>{article.data.title}</a>
             {article.data.draft && <span class="draft">Draft</span>}
           </h2>
           <p>{article.data.description}</p>
-          {/* Wrapped in <p class="date"> because scoped styles in this file
+          {/* A <p> owned by this component, because scoped styles here
               can't reach the <time> that FormattedDate renders. */}
-          <p class="date">
+          <p class="meta">
             <FormattedDate date={article.data.pubDate} />
+            {showTopic && (
+              <>
+                {" · "}
+                <a href={`/topics/${topic.id}/`}>{topic.data.name}</a>
+              </>
+            )}
           </p>
         </li>
       ))}
@@ -55,11 +73,17 @@ const { articles } = Astro.props;
   p {
     margin: 0 0 var(--space-1);
   }
-  .date,
+  .meta,
   .empty {
     font-family: var(--font-ui);
     font-size: var(--text-sm);
     color: var(--color-muted);
+  }
+  .meta a {
+    color: var(--color-muted);
+  }
+  .meta a:hover {
+    color: var(--color-accent);
   }
   .draft {
     margin-left: var(--space-2);

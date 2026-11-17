@@ -2,6 +2,7 @@
 title: An unfinished draft
 description: This article has draft set to true, so it shows in the dev server but never in the built site.
 pubDate: 2026-11-18
+topic: software
 draft: true
 ---
 

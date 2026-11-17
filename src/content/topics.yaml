@@ -1,0 +1,23 @@
+# The topics an article can belong to. Each article names exactly one topic,
+# by its id, in its frontmatter (`topic: structures`).
+#
+# The id (the key before the colon) becomes the URL: /topics/structures/.
+# Use lowercase words separated by hyphens, and avoid renaming an id once
+# articles are published: that would change the URL.
+# `name` and `description` can be changed at any time.
+
+structures:
+  name: Structures
+  description: Beams, bridges and buildings, and the loads they carry.
+
+software:
+  name: Software
+  description: How programs are designed, built, tested and kept running.
+
+practice:
+  name: Practice
+  description: How engineering work gets done, from measuring to writing it up.
+
+Metrology:
+  name: Metrology
+  description: The science of measurements and its applications

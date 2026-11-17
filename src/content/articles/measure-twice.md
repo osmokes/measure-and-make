@@ -2,6 +2,7 @@
 title: Measure twice, cut once
 description: Why the oldest rule in the workshop is really a rule about where errors are cheap to fix.
 pubDate: 2026-11-10
+topic: practice
 ---
 
 Every carpenter learns the rule before they learn to sharpen a chisel: **measure twice, cut once**. It sounds like advice about care. It is really advice about cost.

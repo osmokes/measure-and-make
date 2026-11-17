@@ -1,16 +1,18 @@
 ---
-// Wraps a single article: header (title, standfirst, dates) and body,
+// Wraps a single article: header (topic, title, standfirst, dates) and body,
 // inside the site-wide BaseLayout.
 import BaseLayout from "./BaseLayout.astro";
 import FormattedDate from "../components/FormattedDate.astro";
 import type { Article } from "../lib/articles";
+import { getTopicMap, topicOf } from "../lib/topics";
 
 interface Props {
   article: Article;
 }
 
-const { title, description, pubDate, updatedDate, draft } =
-  Astro.props.article.data;
+const { article } = Astro.props;
+const { title, description, pubDate, updatedDate, draft } = article.data;
+const topic = topicOf(article, await getTopicMap());
 ---
 
 <BaseLayout title={title} description={description}>
@@ -19,6 +21,9 @@ const { title, description, pubDate, updatedDate, draft } =
   <article>
     <header class="article-header">
       {draft && <p class="draft-notice">Draft: not included in the built site.</p>}
+      <p class="topic">
+        <a href={`/topics/${topic.id}/`}>{topic.data.name}</a>
+      </p>
       <h1>{title}</h1>
       <p class="standfirst">{description}</p>
       <p class="dates">
@@ -60,5 +65,20 @@ const { title, description, pubDate, updatedDate, draft } =
   .draft-notice {
     color: var(--color-accent);
     margin-bottom: var(--space-3);
+  }
+  /* Small label above the title, like a newspaper section name. */
+  .topic {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin: 0 0 var(--space-2);
+  }
+  .topic a {
+    text-decoration: none;
+  }
+  .topic a:hover {
+    text-decoration: underline;
   }
 </style>
