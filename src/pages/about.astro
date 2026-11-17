@@ -1,0 +1,54 @@
+---
+// "/about/": what the publication is, what it covers, and the licence.
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { SITE_TITLE, LICENCE } from "../consts";
+---
+
+<BaseLayout
+  title="About"
+  description={`What ${SITE_TITLE} is, what it covers, and how its articles may be reused.`}
+>
+  <h1>About</h1>
+  <p class="lead">
+    {SITE_TITLE} is an independent engineering publication: long-form writing
+    about how things are designed, built and measured.
+  </p>
+
+  <h2>What it covers</h2>
+  <p>
+    Articles range from structures to software to the everyday practice of
+    engineering work. They favour worked examples over opinion: the formula,
+    the numbers, and the code that checks them. Browse them by
+    <a href="/topics/">topic</a> or see <a href="/articles/">all articles</a>.
+  </p>
+
+  <h2>How it's made</h2>
+  <p>
+    The site is static HTML built with <a href="https://astro.build">Astro</a>
+    from plain Markdown files. Equations are rendered with
+    <a href="https://katex.org">KaTeX</a> and code is highlighted with
+    <a href="https://shiki.style">Shiki</a>, all at build time. There are no
+    trackers, adverts or cookies, and pages work without JavaScript.
+  </p>
+
+  <h2>Following along</h2>
+  <p>
+    Subscribe to the <a href="/rss.xml">RSS feed</a> in any feed reader to get
+    new articles as they're published, in full.
+  </p>
+
+  <h2>Reusing articles</h2>
+  <p>
+    Articles are licensed under
+    <a href={LICENCE.url} rel="license">Creative Commons Attribution 4.0
+    ({LICENCE.name})</a>. You may share and adapt them for any purpose,
+    including commercially, as long as you credit {SITE_TITLE} and link to the
+    original article.
+  </p>
+</BaseLayout>
+
+<style>
+  .lead {
+    font-size: var(--text-lg);
+  }
+</style>

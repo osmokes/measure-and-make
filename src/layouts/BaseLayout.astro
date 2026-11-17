@@ -17,10 +17,24 @@ interface Props {
   title?: string;
   /** Text for search results and link previews. */
   description?: string;
+  /** "article" for articles; "website" for everything else (link previews). */
+  ogType?: "website" | "article";
+  /** Ask search engines not to list this page (test pages, 404). */
+  noindex?: boolean;
 }
 
-const { title, description = SITE_DESCRIPTION } = Astro.props;
+const {
+  title,
+  description = SITE_DESCRIPTION,
+  ogType = "website",
+  noindex = false,
+} = Astro.props;
 const fullTitle = title ? `${title} · ${SITE_TITLE}` : SITE_TITLE;
+
+// The full address of this page, e.g. https://example.com/articles/x/.
+// Astro.site comes from `site` in astro.config.mjs.
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+const rssUrl = new URL("/rss.xml", Astro.site);
 ---
 
 <!doctype html>
@@ -30,15 +44,31 @@ const fullTitle = title ? `${title} · ${SITE_TITLE}` : SITE_TITLE;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
+    {/* The one official address of this page, for search engines. */}
+    <link rel="canonical" href={canonicalUrl} />
+    {noindex && <meta name="robots" content="noindex" />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    {/* Lets browsers and feed readers discover the RSS feed. */}
+    <link rel="alternate" type="application/rss+xml" title={SITE_TITLE} href={rssUrl} />
+
+    {/* Open Graph: how the page looks when its link is shared (Slack,
+         Mastodon, LinkedIn...). Twitter/X reads these too. */}
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={SITE_TITLE} />
+    <meta property="og:title" content={title ?? SITE_TITLE} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:locale" content="en_GB" />
+    <meta name="twitter:card" content="summary" />
+    {/* Pages can add their own <head> tags (e.g. article dates) with slot="head". */}
+    <slot name="head" />
+
     {/* Browser UI colour (e.g. mobile address bar) for each scheme. */}
     <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#161514" media="(prefers-color-scheme: dark)" />
     {/* Emits the @font-face rules. Only the upright (normal) file is preloaded,
          because every page needs it straight away; italic loads when used. */}
     <Font cssVariable="--font-serif" preload={[{ style: "normal" }]} />
-    {/* Pages can add their own <head> tags with slot="head". */}
-    <slot name="head" />
   </head>
   <body>
     <div class="page">

@@ -1,11 +1,23 @@
 // Astro configuration. See https://docs.astro.build/en/reference/configuration-reference/
 import { defineConfig, fontProviders } from "astro/config";
 import { satteri } from "@astrojs/markdown-satteri";
+import sitemap from "@astrojs/sitemap";
 import { katexPlugin } from "./plugins/katex.mjs";
 
 export default defineConfig({
-  // `site` (the public URL) will be set once the domain is decided.
+  // The public URL of the site. Feeds, the sitemap, canonical links and link
+  // previews need full addresses, and Astro builds them from this.
+  // TODO (M9): replace the placeholder with the real domain when deploying.
+  site: "https://example.com",
   // Static HTML output is Astro's default, so nothing else is needed for that.
+
+  integrations: [
+    // Generates sitemap-index.xml listing every page, so search engines find
+    // them all. The style guide is a test page, so it's left out.
+    sitemap({
+      filter: (page) => !page.includes("/styleguide/"),
+    }),
+  ],
 
   // Whitespace handling. Astro 7's default ("jsx") follows React's rules and
   // deletes line breaks next to tags, so prose wrapped across lines loses

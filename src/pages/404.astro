@@ -1,0 +1,17 @@
+---
+// Shown for any address that doesn't exist. Astro builds this as 404.html,
+// which Cloudflare (and `npm run preview`) serve automatically.
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Page not found" noindex>
+  <h1>Page not found</h1>
+  <p>
+    There's nothing at this address. It may have moved, or the link may have a
+    typo.
+  </p>
+  <p>
+    Try the <a href="/">home page</a>, browse <a href="/articles/">all articles</a>,
+    or look by <a href="/topics/">topic</a>.
+  </p>
+</BaseLayout>

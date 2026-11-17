@@ -49,7 +49,7 @@ src/
   content.config.ts  Content collections and their frontmatter schemas
   content/articles/  Articles, one Markdown file each
   content/topics.yaml  The list of topics
-  lib/               Shared TypeScript helpers (articles, topics)
+  lib/               Shared TypeScript helpers (articles, topics, feed)
   pages/             Each .astro file here becomes a page; index.astro is "/"
   layouts/           Page shells; BaseLayout.astro wraps every page
   components/        Reusable pieces (site header, footer)
@@ -57,7 +57,8 @@ src/
 ```
 
 `src/pages/styleguide.astro` (at `/styleguide`) shows every text element on one
-page. Use it to check typography changes by eye. It will be hidden before launch.
+page. Use it to check typography changes by eye. It is marked `noindex` and left
+out of the sitemap, so search engines ignore it.
 
 ### Design system
 
@@ -89,6 +90,7 @@ Astro scopes these so they only affect that component.
 | `astro` | The site framework and build tool |
 | `@astrojs/markdown-satteri` | Astro 7's Markdown engine (Sätteri). Already part of Astro; listed because `astro.config.mjs` imports it to turn on maths and add plugins |
 | `katex` | Renders LaTeX maths to HTML at build time (see `plugins/katex.mjs`) |
+| `@astrojs/sitemap` | Generates the sitemap from every built page |
 | `@astrojs/check` (dev) | Type checker behind `npm run check` |
 | `typescript` (dev) | Required by the checker. Pinned to 6.x because `@astrojs/check` does not support TypeScript 7 yet |
 
@@ -208,6 +210,40 @@ structures:
   a broken reference and carries on building.
 - `src/pages/topics/index.astro` lists topics. `src/pages/topics/[topic].astro`
   makes one page per topic.
+
+## Site pages, feeds and search engines
+
+| Address | Source | What it is |
+|---|---|---|
+| `/about/` | `src/pages/about.astro` | About the publication and the licence |
+| `/404.html` | `src/pages/404.astro` | Shown for any unknown address (Cloudflare serves it automatically) |
+| `/rss.xml` | `src/pages/rss.xml.ts` | RSS feed with the full text of every published article |
+| `/sitemap-index.xml` | `@astrojs/sitemap` | Every page, for search engines |
+| `/robots.txt` | `src/pages/robots.txt.ts` | Points crawlers at the sitemap |
+
+- **Endpoints:** `.ts` files in `src/pages/` are *endpoints*. They return any
+  kind of file (here XML or text) instead of an HTML page.
+- **The feed:** `src/lib/feed.ts` holds the feed's helpers. They escape text
+  for XML, make site-relative links absolute, and drop KaTeX's styled copy of
+  each equation, which needs our CSS. That leaves the MathML copy, which feed
+  readers can draw themselves.
+- **Link previews:** `BaseLayout.astro` adds a canonical URL and Open Graph
+  tags (title, description, type, URL). That's what Slack, Mastodon and
+  similar apps show when someone shares a link. Articles also carry their
+  publication date and topic.
+- **Hiding a page:** pass `noindex` to `BaseLayout` to ask search engines not
+  to list a page (used by `/404` and `/styleguide`).
+
+> **Placeholder domain:** `site` in `astro.config.mjs` is `https://example.com`
+> until deployment (Milestone 9). Every full URL in the feed, sitemap,
+> robots.txt and link previews comes from it, so changing that one line updates
+> them all.
+
+### Licence
+
+Articles are published under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+The licence name and link live in `src/consts.ts` (`LICENCE`) and appear in
+the footer, the About page and the RSS feed.
 
 ## Deployment
 
