@@ -100,6 +100,10 @@ Astro scopes these so they only affect that component.
 
 ## Writing articles
 
+> **Step-by-step guide:** [docs/publishing.md](docs/publishing.md) walks
+> through writing, previewing, checking and publishing an article. The
+> sections below are the reference.
+
 Articles are Markdown files in `src/content/articles/`. The file name becomes
 the URL, so `how-bridges-carry-load.md` is published at
 `/articles/how-bridges-carry-load/`. Use lowercase words separated by hyphens,
