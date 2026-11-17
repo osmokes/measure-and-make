@@ -3,11 +3,15 @@ title: How far does a beam bend?
 description: The classic formula for a loaded beam, checked with a few lines of code.
 pubDate: 2026-11-16
 topic: structures
+image: ./images/beam-deflection/cover.png
+imageAlt: A loaded beam sagging between two supports, under the title "How far does a beam bend?"
 ---
 
 Put a weight in the middle of a plank resting on two bricks and it sags. How much it sags depends on four things: the load $F$, the span $L$, the stiffness of the material $E$, and the shape of the cross-section $I$.
 
 ## The formula
+
+![A horizontal beam resting on a pin support at the left end and a roller at the right, with a downward force F at the centre. A dashed curve shows the beam sagging by a distance delta in the middle; the span between the supports is marked L.](./images/beam-deflection/beam.svg "Figure 1. A simply supported beam with a point load at mid-span. The sag is exaggerated.")
 
 For a simply supported beam with a point load at mid-span, the deflection at the centre is[^beam]
 

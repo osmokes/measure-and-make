@@ -1,6 +1,7 @@
 ---
 // Wraps a single article: header (topic, title, standfirst, dates) and body,
 // inside the site-wide BaseLayout.
+import { getImage } from "astro:assets";
 import BaseLayout from "./BaseLayout.astro";
 import FormattedDate from "../components/FormattedDate.astro";
 import type { Article } from "../lib/articles";
@@ -11,11 +12,28 @@ interface Props {
 }
 
 const { article } = Astro.props;
-const { title, description, pubDate, updatedDate, draft } = article.data;
+const { title, description, pubDate, updatedDate, draft, image, imageAlt } =
+  article.data;
 const topic = topicOf(article, await getTopicMap());
+
+// Cover image for link previews only (never shown on the page). getImage()
+// makes a 1200 px wide JPEG, a size and format every preview service accepts.
+if (image?.format === "svg") {
+  throw new Error(
+    `Article "${article.id}": the cover image can't be an SVG (link previews ` +
+      `don't support it). Export it as PNG or JPG instead.`,
+  );
+}
+const cover = image && (await getImage({ src: image, width: 1200, format: "jpeg" }));
+const ogImage = cover && {
+  src: cover.src,
+  width: Number(cover.attributes.width),
+  height: Number(cover.attributes.height),
+  alt: imageAlt ?? "",
+};
 ---
 
-<BaseLayout title={title} description={description} ogType="article">
+<BaseLayout title={title} description={description} ogType="article" ogImage={ogImage}>
   {/* Pass any slot="head" content from the page on to BaseLayout's <head>. */}
   <slot name="head" slot="head" />
   {/* Article dates for link previews and search engines. */}

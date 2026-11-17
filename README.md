@@ -43,11 +43,12 @@ Stop the dev server with <kbd>Ctrl</kbd>+<kbd>C</kbd>.
 astro.config.mjs     Astro configuration (fonts, whitespace, Markdown features)
 tsconfig.json        TypeScript settings (Astro's "strict" preset)
 plugins/katex.mjs    Markdown plugin that renders maths with KaTeX
+plugins/figures.mjs  Markdown plugin: captioned images become figures; alt text required
 public/              Copied to the site as-is (favicon, robots.txt, …)
 src/
   consts.ts          Site title and description, used everywhere
   content.config.ts  Content collections and their frontmatter schemas
-  content/articles/  Articles, one Markdown file each
+  content/articles/  Articles, one Markdown file each (images in images/<article>/)
   content/topics.yaml  The list of topics
   lib/               Shared TypeScript helpers (articles, topics, feed)
   pages/             Each .astro file here becomes a page; index.astro is "/"
@@ -111,6 +112,8 @@ pubDate: 2026-11-17
 topic: structures         # one id from src/content/topics.yaml
 updatedDate: 2026-12-01   # optional
 draft: true               # optional; remove it to publish
+image: ./images/how-bridges-carry-load/cover.png   # optional link-preview image
+imageAlt: A suspension bridge at dusk               # required if image is set
 ---
 
 The article text starts here, in ordinary Markdown.
@@ -197,6 +200,35 @@ structures:
 - **Empty topics:** a topic gets a page and appears on `/topics/` only once it
   has a published article.
 
+### Images and diagrams
+
+Put an article's images in `src/content/articles/images/<article-name>/` and
+reference them relative to the article:
+
+```markdown
+![Description for screen readers](./images/beam-deflection/beam.svg "Figure 1. The caption shown under the image.")
+```
+
+- **Alt text is required.** The text in square brackets is read aloud to
+  people who can't see the image. An image without it stops the build.
+- **Captions:** the quoted title becomes a caption. An image on its own line
+  with a title becomes a `<figure>` with a `<figcaption>`
+  (`plugins/figures.mjs`). Without a title, it's a plain image.
+- **Optimisation:** Astro optimises images in `src/` automatically. It
+  converts photos to WebP, sets width and height so the page doesn't jump
+  while loading, lazy-loads them, and gives each file a fingerprinted name so
+  browsers can cache it for ever. Images in `public/` get none of this, so
+  don't put article images there.
+- **Diagrams:** draw them in any tool (Excalidraw, draw.io, Inkscape, Figma)
+  **in black on a transparent background**, and export as **SVG**. In dark
+  mode, SVGs in articles are colour-inverted (`global.css`), so black lines
+  turn light and the accent colour keeps roughly its hue. For an SVG that must
+  keep its exact colours, export it as PNG instead.
+- **Cover images:** `image` in frontmatter is used only for link previews and
+  is never shown on the page. Use JPG or PNG at 1200 × 630, because previews
+  can't show SVG. Astro makes a 1200 px JPEG from it, and `imageAlt` is
+  required alongside it.
+
 ### How pages are generated
 
 - `src/lib/articles.ts` has `getArticles()`, the one place that hides drafts
@@ -227,6 +259,10 @@ structures:
   for XML, make site-relative links absolute, and drop KaTeX's styled copy of
   each equation, which needs our CSS. That leaves the MathML copy, which feed
   readers can draw themselves.
+- **Rendering for the feed:** articles are rendered with Astro's Container API
+  (`experimental_AstroContainer`), not `article.rendered.html`. The raw HTML
+  still has placeholders where Astro later inserts optimised images, so images
+  would be broken in the feed.
 - **Link previews:** `BaseLayout.astro` adds a canonical URL and Open Graph
   tags (title, description, type, URL). That's what Slack, Mastodon and
   similar apps show when someone shares a link. Articles also carry their

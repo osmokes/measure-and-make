@@ -23,7 +23,10 @@ const articles = defineCollection({
   // The frontmatter every article must have. If a file is missing a field or
   // has the wrong type (e.g. a misspelt date), the build stops with an error
   // naming the file, instead of publishing a broken page.
-  schema: z.object({
+  //
+  // The schema is a function here so Astro can hand us `image()`, which
+  // checks that an image path exists and loads it for optimisation.
+  schema: ({ image }) => z.object({
     title: z.string(),
     /** Standfirst shown under the title, in lists, and in search results. */
     description: z.string(),
@@ -34,7 +37,21 @@ const articles = defineCollection({
     topic: reference("topics"),
     /** Drafts are visible in `npm run dev` but never built. */
     draft: z.boolean().default(false),
-  }),
+    /**
+     * Optional cover image, used only for link previews (Slack, Mastodon...).
+     * Path relative to the article, e.g. ./images/my-article/cover.png.
+     * Best at 1200 × 630. Link previews can't show SVG, so use JPG/PNG/WebP
+     * (ArticleLayout.astro stops the build with a clear message for SVG).
+     */
+    image: image().optional(),
+    /** Describes the cover image for people who can't see it. */
+    imageAlt: z.string().optional(),
+  })
+    // If there's a cover image, its description is required too.
+    .refine((data) => !data.image || data.imageAlt, {
+      message: "Add `imageAlt` describing the cover image.",
+      path: ["imageAlt"],
+    }),
 });
 
 export const collections = { topics, articles };

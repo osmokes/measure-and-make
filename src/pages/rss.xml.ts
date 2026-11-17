@@ -8,6 +8,8 @@
 // their feed app. Format: RSS 2.0 (https://www.rssboard.org/rss-specification)
 // with the "content" extension for the full HTML.
 import type { APIRoute } from "astro";
+import { experimental_AstroContainer as AstroContainer } from "astro/container";
+import { render } from "astro:content";
 import { getArticles } from "../lib/articles";
 import { absolutiseUrls, escapeXml, stripKatexHtml } from "../lib/feed";
 import { SITE_TITLE, SITE_DESCRIPTION, LICENCE } from "../consts";
@@ -18,10 +20,15 @@ export const GET: APIRoute = async ({ site }) => {
   // getArticles() leaves drafts out of production builds.
   const articles = await getArticles();
 
-  const items = articles.map((article) => {
+  // The Container API renders a component to an HTML string, the same way a
+  // page does. We use it rather than `article.rendered.html` because that
+  // raw HTML still has placeholders where Astro inserts optimised images.
+  const container = await AstroContainer.create();
+
+  const items = await Promise.all(articles.map(async (article) => {
     const url = new URL(`/articles/${article.id}/`, site).href;
-    // The article's Markdown, already rendered to HTML by Astro.
-    const html = article.rendered?.html ?? "";
+    const { Content } = await render(article);
+    const html = await container.renderToString(Content);
     const feedHtml = absolutiseUrls(stripKatexHtml(html), site);
 
     return `
@@ -33,7 +40,7 @@ export const GET: APIRoute = async ({ site }) => {
       <description>${escapeXml(article.data.description)}</description>
       <content:encoded>${escapeXml(feedHtml)}</content:encoded>
     </item>`;
-  });
+  }));
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom">

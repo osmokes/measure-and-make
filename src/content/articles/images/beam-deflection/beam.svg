@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 260" width="640" height="260" font-family="Georgia, 'Times New Roman', serif" font-size="18">
+  <!-- Simply supported beam with a central point load. Black on transparent,
+       so the site can invert it in dark mode. The load arrow uses the accent. -->
+  <title>Simply supported beam with a point load F at mid-span</title>
+
+  <!-- Load arrow F -->
+  <g stroke="#7d2330" fill="#7d2330">
+    <line x1="320" y1="20" x2="320" y2="88" stroke-width="3"/>
+    <polygon points="311,84 329,84 320,102" stroke="none"/>
+  </g>
+  <text x="332" y="42" fill="#7d2330" font-style="italic">F</text>
+
+  <!-- Beam, unloaded position -->
+  <rect x="60" y="104" width="520" height="16" fill="none" stroke="#1c1b19" stroke-width="2"/>
+
+  <!-- Deflected shape (exaggerated), dashed -->
+  <path d="M 68 128 Q 320 190 572 128" fill="none" stroke="#1c1b19" stroke-width="2" stroke-dasharray="7 6"/>
+
+  <!-- Deflection delta at mid-span -->
+  <g stroke="#1c1b19" stroke-width="1.5">
+    <line x1="320" y1="124" x2="320" y2="156"/>
+    <polyline points="315,150 320,158 325,150" fill="none"/>
+  </g>
+  <text x="330" y="152" fill="#1c1b19" font-style="italic">δ</text>
+
+  <!-- Supports: pin (left) and roller (right) -->
+  <g fill="none" stroke="#1c1b19" stroke-width="2">
+    <polygon points="68,120 52,148 84,148"/>
+    <line x1="42" y1="148" x2="94" y2="148"/>
+    <polygon points="572,120 556,144 588,144"/>
+    <circle cx="562" cy="148" r="4"/>
+    <circle cx="582" cy="148" r="4"/>
+    <line x1="546" y1="153" x2="598" y2="153"/>
+  </g>
+
+  <!-- Span L -->
+  <g stroke="#1c1b19" stroke-width="1.5" fill="none">
+    <line x1="68" y1="200" x2="572" y2="200"/>
+    <line x1="68" y1="190" x2="68" y2="210"/>
+    <line x1="572" y1="190" x2="572" y2="210"/>
+    <polyline points="78,195 68,200 78,205"/>
+    <polyline points="562,195 572,200 562,205"/>
+  </g>
+  <rect x="300" y="186" width="40" height="28" fill="#fbfaf7" fill-opacity="0"/>
+  <text x="320" y="232" fill="#1c1b19" font-style="italic" text-anchor="middle">L</text>
+</svg>

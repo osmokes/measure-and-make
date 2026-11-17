@@ -21,6 +21,8 @@ interface Props {
   ogType?: "website" | "article";
   /** Ask search engines not to list this page (test pages, 404). */
   noindex?: boolean;
+  /** Link-preview image: a site-relative URL plus its size and description. */
+  ogImage?: { src: string; width: number; height: number; alt: string };
 }
 
 const {
@@ -28,6 +30,7 @@ const {
   description = SITE_DESCRIPTION,
   ogType = "website",
   noindex = false,
+  ogImage,
 } = Astro.props;
 const fullTitle = title ? `${title} · ${SITE_TITLE}` : SITE_TITLE;
 
@@ -59,7 +62,19 @@ const rssUrl = new URL("/rss.xml", Astro.site);
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:locale" content="en_GB" />
-    <meta name="twitter:card" content="summary" />
+    {
+      ogImage && (
+        <>
+          {/* Preview images must be full URLs, so prefix the site address. */}
+          <meta property="og:image" content={new URL(ogImage.src, Astro.site)} />
+          <meta property="og:image:width" content={String(ogImage.width)} />
+          <meta property="og:image:height" content={String(ogImage.height)} />
+          <meta property="og:image:alt" content={ogImage.alt} />
+        </>
+      )
+    }
+    {/* With an image, ask for the large preview card instead of the small one. */}
+    <meta name="twitter:card" content={ogImage ? "summary_large_image" : "summary"} />
     {/* Pages can add their own <head> tags (e.g. article dates) with slot="head". */}
     <slot name="head" />
 

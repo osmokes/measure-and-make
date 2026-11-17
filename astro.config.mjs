@@ -3,6 +3,7 @@ import { defineConfig, fontProviders } from "astro/config";
 import { satteri } from "@astrojs/markdown-satteri";
 import sitemap from "@astrojs/sitemap";
 import { katexPlugin } from "./plugins/katex.mjs";
+import { figuresPlugin } from "./plugins/figures.mjs";
 
 export default defineConfig({
   // The public URL of the site. Feeds, the sitemap, canonical links and link
@@ -49,6 +50,7 @@ export default defineConfig({
         gfm: { footnotes: { label: "Notes" } }, // [^1] footnotes
       },
       mdastPlugins: [katexPlugin], // plugins/katex.mjs renders the maths
+      hastPlugins: [figuresPlugin], // plugins/figures.mjs: captions, alt text
     }),
 
     // Code blocks: Shiki colours them at build time (no JavaScript sent to

@@ -274,11 +274,32 @@ video {
   max-width: 100%;
   height: auto;
 }
+img {
+  display: block; /* removes the small gap below inline images */
+}
+figure {
+  margin-inline: 0; /* browsers indent figures by default */
+  margin-block: var(--space-5);
+}
+figure img {
+  margin-inline: auto; /* centre images narrower than the column */
+}
 figcaption {
   font-family: var(--font-ui);
   font-size: var(--text-sm);
   color: var(--color-muted);
   margin-top: var(--space-2);
+}
+
+/* Diagrams in dark mode. Article SVGs are drawn black on transparent, which
+   would vanish on a dark background. invert(1) flips them to light lines;
+   hue-rotate(180deg) turns the colours back round, so the oxblood accent
+   stays reddish instead of becoming teal. Applies to SVG files only, so
+   photos (JPG/PNG/WebP) are untouched. */
+@media (prefers-color-scheme: dark) {
+  main img[src$=".svg"] {
+    filter: invert(1) hue-rotate(180deg);
+  }
 }
 
 /* Utility: hide visually, but keep for screen readers. */
