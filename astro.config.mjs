@@ -8,8 +8,7 @@ import { figuresPlugin } from "./plugins/figures.mjs";
 export default defineConfig({
   // The public URL of the site. Feeds, the sitemap, canonical links and link
   // previews need full addresses, and Astro builds them from this.
-  // TODO (M9): replace the placeholder with the real domain when deploying.
-  site: "https://example.com",
+  site: "https://measuremake.uk",
   // Static HTML output is Astro's default, so nothing else is needed for that.
 
   integrations: [

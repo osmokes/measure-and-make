@@ -1,0 +1,22 @@
+// Cloudflare configuration for deploying the site.
+// https://developers.cloudflare.com/workers/static-assets/
+//
+// The site is plain static files, so this is a Worker with "static assets"
+// and no code of its own (there's no `main` field): Cloudflare serves the
+// files in dist/ from its network.
+{
+  // The Worker's name: shown in the dashboard and used for the free
+  // address, measure-and-make.<your-subdomain>.workers.dev.
+  "name": "measure-and-make",
+
+  // Which version of the Workers runtime behaviour to use. A fixed date
+  // means Cloudflare's later changes can't alter how the site is served.
+  "compatibility_date": "2026-11-17",
+
+  "assets": {
+    // What `npm run build` produces.
+    "directory": "./dist",
+    // Unknown addresses get our 404.html, with a real 404 status.
+    "not_found_handling": "404-page"
+  }
+}

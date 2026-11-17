@@ -7,6 +7,9 @@ dist/
 # Astro's generated types and cache
 .astro/
 
+# Wrangler's local cache (created by `wrangler dev`)
+.wrangler/
+
 # Environment variables / secrets — never commit these
 .env
 .env.*

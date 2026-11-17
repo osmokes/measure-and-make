@@ -1,6 +1,6 @@
 # Measure and Make
 
-An independent engineering publication. A static website built with
+An independent engineering publication at <https://measuremake.uk>. A static website built with
 [Astro](https://astro.build) and TypeScript, with articles written in Markdown
 and hosted on Cloudflare.
 
@@ -21,7 +21,7 @@ The package manager is **npm**. Use npm for all commands; don't mix it with pnpm
 ## Installation
 
 ```sh
-git clone https://github.com/<your-username>/measure-and-make.git
+git clone https://github.com/osmokes/measure-and-make.git
 cd measure-and-make
 npm install
 ```
@@ -40,7 +40,9 @@ Stop the dev server with <kbd>Ctrl</kbd>+<kbd>C</kbd>.
 ### Project structure
 
 ```text
-astro.config.mjs     Astro configuration (fonts, whitespace, Markdown features)
+astro.config.mjs     Astro configuration (site URL, fonts, whitespace, Markdown)
+wrangler.jsonc       Cloudflare hosting configuration
+.node-version        Node version for Cloudflare's build servers
 tsconfig.json        TypeScript settings (Astro's "strict" preset)
 plugins/katex.mjs    Markdown plugin that renders maths with KaTeX
 plugins/figures.mjs  Markdown plugin: captioned images become figures; alt text required
@@ -300,10 +302,9 @@ and a ready-made search box into `dist/pagefind/`.
 - **Hiding a page:** pass `noindex` to `BaseLayout` to ask search engines not
   to list a page (used by `/404` and `/styleguide`).
 
-> **Placeholder domain:** `site` in `astro.config.mjs` is `https://example.com`
-> until deployment (Milestone 9). Every full URL in the feed, sitemap,
-> robots.txt and link previews comes from it, so changing that one line updates
-> them all.
+> **Domain:** `site` in `astro.config.mjs` is `https://measuremake.uk`. Every
+> full URL in the feed, sitemap, robots.txt and link previews comes from it,
+> so if the domain ever changes, that one line updates them all.
 
 ### Licence
 
@@ -313,4 +314,45 @@ the footer, the About page and the RSS feed.
 
 ## Deployment
 
-_Added in Milestone 9 (Cloudflare)._
+The site is hosted on [Cloudflare](https://cloudflare.com) as a Worker with
+static assets. Cloudflare serves the files in `dist/`, and there is no server
+code. The setup lives in `wrangler.jsonc`.
+
+### How a deploy happens
+
+The GitHub repository is connected to Cloudflare (Workers Builds), so **every
+push to `main` deploys the site** with no further steps:
+
+1. Cloudflare checks out the commit and installs dependencies with
+   `npm clean-install`. It uses Node from `.node-version` (24) and the npm
+   version from `packageManager` in `package.json`.
+2. It runs the build command, `npm run build`: type check, Astro build, then
+   the Pagefind search index.
+3. It runs the deploy command, `npx wrangler deploy`, which uploads `dist/`.
+
+If any step fails (a type error, a bad article, a missing alt text), nothing
+is deployed and the live site stays as it was. The build log is in the
+Cloudflare dashboard under the Worker's **Deployments** tab.
+
+**Branches:** pushing any other branch builds a **preview** at its own URL
+without touching the live site. That's useful for checking a milestone before
+merging.
+
+**Rolling back:** in the dashboard, open **Deployments**, pick an earlier
+deployment and choose **Rollback**. Or revert the commit in Git and push.
+
+### Checking a build locally the way Cloudflare serves it
+
+```sh
+npm run build
+npx wrangler dev        # serves dist/ in Cloudflare's runtime at http://localhost:8787
+```
+
+### Cloudflare dashboard settings (set once)
+
+| Setting | Value |
+|---|---|
+| Build command | `npm run build` |
+| Deploy command | `npx wrangler deploy` |
+| Production branch | `main` |
+| Root directory | `/` (the repository root) |
