@@ -28,7 +28,31 @@ npm install
 
 ## Development
 
-_Added in Milestone 1 (Astro scaffold)._
+| Command | What it does |
+|---|---|
+| `npm run dev` | Start a local server at <http://localhost:4321> that reloads on save |
+| `npm run check` | Type-check `.astro` and `.ts` files |
+| `npm run build` | Type-check, then build the static site into `dist/` |
+| `npm run preview` | Serve the built `dist/` folder locally, as visitors would see it |
+
+Stop the dev server with <kbd>Ctrl</kbd>+<kbd>C</kbd>.
+
+### Project structure
+
+```text
+astro.config.mjs     Astro configuration
+tsconfig.json        TypeScript settings (Astro's "strict" preset)
+public/              Copied to the site as-is (favicon, robots.txt, …)
+src/pages/           Each .astro file here becomes a page; index.astro is "/"
+```
+
+### Dependencies
+
+| Package | Why |
+|---|---|
+| `astro` | The site framework and build tool |
+| `@astrojs/check` (dev) | Type checker behind `npm run check` |
+| `typescript` (dev) | Required by the checker. Pinned to 6.x because `@astrojs/check` does not support TypeScript 7 yet |
 
 ## Writing articles
 
